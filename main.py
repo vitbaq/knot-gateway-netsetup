@@ -17,6 +17,7 @@ from gi.repository import GObject
 
 import daemon
 from wpantun import Wpantun
+from ble import *
 
 mainloop = None
 
@@ -45,6 +46,7 @@ with context:
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
     wpan = Wpantun()
+    bluetooth = Ble(wpan)
 
     mainloop = GObject.MainLoop()
 
