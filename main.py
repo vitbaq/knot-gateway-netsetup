@@ -16,6 +16,7 @@ import dbus.mainloop.glib
 from gi.repository import GObject
 
 import daemon
+from wpantun import Wpantun
 
 mainloop = None
 
@@ -42,6 +43,8 @@ context = daemon.DaemonContext(
 
 with context:
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+    wpan = Wpantun()
 
     mainloop = GObject.MainLoop()
 
