@@ -39,6 +39,15 @@ def register_ad_error_cb(error):
     mainloop.quit()
 
 
+def register_gatt_cb():
+    print('GATT application registered')
+
+
+def register_gatt_error_cb(error):
+    print('Failed to register application: ' + str(error))
+    mainloop.quit()
+
+
 context = daemon.DaemonContext(
     working_directory='/home/vitorbarros/newLora/knot-gatt-service',
     umask=0o002,
@@ -64,7 +73,14 @@ with context:
         reply_handler=register_ad_cb,
         error_handler=register_ad_error_cb)
 
+    bluetooth.gatt_manager.RegisterApplication(
+        bluetooth.gatt_knot.get_path(), {},
+        reply_handler=register_gatt_cb,
+        error_handler=register_gatt_error_cb)
+
     mainloop.run()
 
+    bluetooth.gatt_manager.UnregisterApplication(bluetooth.gatt_knot)
     bluetooth.ad_manager.UnregisterAdvertisement(bluetooth.ad_knot)
+    dbus.service.Object.remove_from_connection(bluetooth.gatt_knot)
     dbus.service.Object.remove_from_connection(bluetooth.ad_knot)
