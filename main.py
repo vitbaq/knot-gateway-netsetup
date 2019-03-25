@@ -30,6 +30,15 @@ def quit_cb(signal_number, stack_frame):
     mainloop.quit()
 
 
+def register_ad_reply_cb():
+    logging.info('Advertisement registered')
+
+
+def register_ad_error_cb(error):
+    logging.info('Failed to register advertisement: ' + str(error))
+    mainloop.quit()
+
+
 context = daemon.DaemonContext(
     working_directory='/usr/local/bin',
     umask=0o002,
@@ -49,4 +58,12 @@ with context:
 
     mainloop = GObject.MainLoop()
 
+    bluetooth.ad_manager.RegisterAdvertisement(
+        bluetooth.ad_knot.get_path(), {},
+        reply_handler=register_ad_reply_cb,
+        error_handler=register_ad_error_cb)
+
     mainloop.run()
+
+    bluetooth.ad_manager.UnregisterAdvertisement(bluetooth.ad_knot)
+    dbus.service.Object.remove_from_connection(bluetooth.ad_knot)
