@@ -10,6 +10,7 @@ import signal
 import lockfile
 import functools
 import logging
+import argparse
 import dbus
 import dbus.service
 import dbus.mainloop.glib
@@ -51,11 +52,23 @@ def register_gatt_error_cb(error):
 def main():
     global mainloop
 
+    parser = argparse.ArgumentParser(description="KNoT NetSetup Daemon")
+    parser.add_argument("-w", "--working-dir", metavar="<path>",
+                        default="/usr/local/bin",
+                        type=str,
+                        help="Daemon working directory")
+    parser.add_argument("-p", "--pid-file", metavar="<path/netsetup>",
+                        default="/tmp/netsetup", type=str,
+                        help="PID file path and name")
+    parser.add_argument("-n", "--detach-process", action="store_false",
+                        help="Detached process")
+    args = parser.parse_args()
+
     context = daemon.DaemonContext(
-        working_directory='/usr/local/bin',
+        working_directory=args.working_dir,
         umask=0o002,
-        detach_process=False,
-        pidfile=lockfile.FileLock('/tmp/netsetup'),
+        detach_process=args.detach_process,
+        pidfile=lockfile.FileLock(args.pid_file),
         signal_map={signal.SIGTERM: quit_cb, signal.SIGINT: quit_cb},
         stdout=sys.stdout,
         stderr=sys.stderr,
