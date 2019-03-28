@@ -60,6 +60,9 @@ def main():
     parser.add_argument("-p", "--pid-file", metavar="<path/netsetup>",
                         default="/tmp/netsetup", type=str,
                         help="PID file path and name")
+    parser.add_argument("-a", "--ad-name", metavar="<ad-name>",
+                        default="KNoTAdvertisement", type=str,
+                        help="Advertisement name")
     parser.add_argument("-n", "--detach-process", action="store_false",
                         help="Detached process")
     args = parser.parse_args()
@@ -78,7 +81,7 @@ def main():
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
         wpan = Wpantun()
-        bluetooth = Ble(wpan)
+        bluetooth = Ble(wpan, args.ad_name)
 
         mainloop = GObject.MainLoop()
 

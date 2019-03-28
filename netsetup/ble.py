@@ -444,10 +444,10 @@ class Advertisement(dbus.service.Object):
 
 
 class KnotAdvertisement(Advertisement):
-    def __init__(self, bus, index):
+    def __init__(self, bus, index, ad_name):
         Advertisement.__init__(self, bus, index, 'peripheral')
         self.add_service_uuid("a8a9e49c-aa9a-d441-9bec-817bb4900e30")
-        self.add_local_name('KnotAdvertisement')
+        self.add_local_name(ad_name)
         self.include_tx_power = True
 
 
@@ -463,7 +463,7 @@ class Ble(object):
     gatt_manager = None
     gatt_knot = None
 
-    def __init__(self, wpan):
+    def __init__(self, wpan, ad_name):
         global wpantun
 
         self.bus = dbus.SystemBus()
@@ -485,7 +485,7 @@ class Ble(object):
                                 self.ad_adapter),
             LE_ADVERTISING_MANAGER_IFACE)
 
-        self.ad_knot = KnotAdvertisement(self.bus, 0)
+        self.ad_knot = KnotAdvertisement(self.bus, 0, ad_name)
 
         self.gatt_adapter = find_adapter(self.bus, GATT_MANAGER_IFACE)
         if not self.gatt_adapter:
