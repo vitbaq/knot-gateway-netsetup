@@ -17,6 +17,7 @@ import dbus.mainloop.glib
 import gobject as GObject
 
 import daemon
+from .desktop_bus import DbusService
 from .wpantun import Wpantun
 from .ble import Ble
 
@@ -82,6 +83,7 @@ def main():
 
         wpan = Wpantun()
         bluetooth = Ble(wpan, args.ad_name)
+        dbus_obj = DbusService(wpan)
 
         mainloop = GObject.MainLoop()
 
