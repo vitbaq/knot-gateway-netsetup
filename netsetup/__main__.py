@@ -18,8 +18,8 @@ import gobject as GObject
 
 import daemon
 from .desktop_bus import DbusService
-from .wpantun import Wpantun
-from .ble import Ble
+from .wpantun import WpanClient
+from .ble import BleService
 
 mainloop = None
 
@@ -81,28 +81,28 @@ def main():
     with context:
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
-        wpan = Wpantun()
-        bluetooth = Ble(wpan, args.ad_name)
-        dbus_obj = DbusService(wpan)
+        wpan_inst = WpanClient()
+        ble_inst = BleService(wpan_inst, args.ad_name)
+        dbus_inst = DbusService(wpan_inst)
 
         mainloop = GObject.MainLoop()
 
-        bluetooth.ad_manager.RegisterAdvertisement(
-            bluetooth.ad_knot.get_path(), {},
+        ble_inst.ad_manager.RegisterAdvertisement(
+            ble_inst.ad_knot.get_path(), {},
             reply_handler=register_ad_reply_cb,
             error_handler=register_ad_error_cb)
 
-        bluetooth.gatt_manager.RegisterApplication(
-            bluetooth.gatt_knot.get_path(), {},
+        ble_inst.gatt_manager.RegisterApplication(
+            ble_inst.gatt_knot.get_path(), {},
             reply_handler=register_gatt_reply_cb,
             error_handler=register_gatt_error_cb)
 
         mainloop.run()
 
-        bluetooth.gatt_manager.UnregisterApplication(bluetooth.gatt_knot)
-        bluetooth.ad_manager.UnregisterAdvertisement(bluetooth.ad_knot)
-        dbus.service.Object.remove_from_connection(bluetooth.gatt_knot)
-        dbus.service.Object.remove_from_connection(bluetooth.ad_knot)
+        ble_inst.gatt_manager.UnregisterApplication(ble_inst.gatt_knot)
+        ble_inst.ad_manager.UnregisterAdvertisement(ble_inst.ad_knot)
+        dbus.service.Object.remove_from_connection(ble_inst.gatt_knot)
+        dbus.service.Object.remove_from_connection(ble_inst.ad_knot)
 
 
 if __name__ == "__main__":

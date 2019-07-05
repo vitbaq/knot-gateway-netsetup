@@ -33,7 +33,7 @@ class Singleton(type):
         return cls.__instances[cls]
 
 
-class Wpantun(object):
+class WpanClient(object):
     __metaclass__ = Singleton
 
     bus = None
