@@ -451,7 +451,7 @@ class KnotAdvertisement(Advertisement):
         self.include_tx_power = True
 
 
-class Ble(object):
+class BleService(object):
     bus = None
 
     ad_adapter = None
